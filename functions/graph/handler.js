@@ -10,8 +10,8 @@ const {
   GraphQLNonNull
 } = require('graphql')
 
-// This method just inserts the user's first name into the greeting message.
-const getGreeting = firstName => `Hello, ${firstName}.`
+// This method just inserts the user's gift name into the response message.
+const getGiftName = giftName => `Hello, ${giftName}.`
 
 /*
  * stolen from https://github.com/serverless/examples/tree/master/aws-node-graphql-api-with-dynamodb
@@ -25,7 +25,7 @@ const schema = new GraphQLSchema({
       greeting: {
         args: { gifttName: { gift: 'gifttName', type: new GraphQLNonNull(GraphQLString) } },
         type: GraphQLString,
-        resolve: (parent, args) => getGreeting(args.gifttName)
+        resolve: (parent, args) => getGiftName(args.gifttName)
       }
     }
   }),
