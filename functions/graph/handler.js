@@ -1,5 +1,4 @@
 'use strict';
-const schema = require('./schemas/testGetQuery');
 
 /* handler.js */
 const {
