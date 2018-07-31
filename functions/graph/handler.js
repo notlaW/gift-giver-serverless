@@ -1,17 +1,41 @@
 'use strict';
+const schema = require('./schemas/testGetQuery');
 
-let graph = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'HELLO FROM THE GRAPH ENDPOINT',
-    }),
-  };
+/* handler.js */
+const {
+  graphql,
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull
+} = require('graphql')
 
-  callback(null, response);
+// This method just inserts the user's first name into the greeting message.
+const getGreeting = firstName => `Hello, ${firstName}.`
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
-};
+/*
+ * stolen from https://github.com/serverless/examples/tree/master/aws-node-graphql-api-with-dynamodb
+ */
 
-module.exports.graph = graph;
+// Here we declare the schema and resolvers for the query
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'TestQueryType', // an arbitrary name
+    fields: {
+      greeting: {
+        args: { gifttName: { gift: 'gifttName', type: new GraphQLNonNull(GraphQLString) } },
+        type: GraphQLString,
+        resolve: (parent, args) => getGreeting(args.gifttName)
+      }
+    }
+  }),
+});
+
+let graph = (event, context, callback) =>
+  graphql(schema, event.queryStringParameters.query)
+  .then(
+    result => callback(null, { statusCode: 200, body: JSON.stringify(result) }),
+    err => callback(err)
+  );
+
+module.exports.graph = graph
